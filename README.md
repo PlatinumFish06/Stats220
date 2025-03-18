@@ -4,7 +4,6 @@ I am currently on my *last* year of my **computer science** degree. This is my r
 
 ### Statistic and me:
 
-- I am undertaking a degree in Computer Science.
 - I am taking STATS 220 because I did STATS 20X last semester and would like to continue learning more.
 - I am interested in learning about R and familiarising myself with the ways to understand data.
 
