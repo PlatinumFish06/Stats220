@@ -1,6 +1,6 @@
 # stats220
 
-I am currently on my *last* year of my *computer science* degree. This is my repo for STATS 220. 
+I am currently on my *last* year of my **computer science** degree. This is my repo for STATS 220. 
 
 ### Statistic and me:
 
