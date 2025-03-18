@@ -15,4 +15,4 @@ I am currently on my *last* year of my **computer science** degree. This is my r
 3. R Sound Design
 
 
-A meme that captures how I currently feel about my university studies is ![catgif](https://tenor.com/view/jinki948-cat-thinking-lay-down-lying-down-gif-22585363)
+A meme that captures how I currently feel about my university studies is ![catgif](https://c.tenor.com/oru46iVfRtgAAAAd/tenor.gif)
