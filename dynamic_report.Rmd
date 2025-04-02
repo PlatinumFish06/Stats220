@@ -1,0 +1,188 @@
+---
+title: My dynamic report
+output: html_fragment
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo=FALSE, message=FALSE, warning=FALSE, error=FALSE)
+
+library(tidyverse)
+library(ggplot2)
+```
+
+```{css}
+body {
+  background-color: #fcf6f2;
+}
+.title {
+  margin-bottom: 0;
+}
+.subtitle {
+  margin-top: 0;
+  margin-bottom:20px;
+  font-style: italic;
+}
+
+
+a, p {
+  font-size: 21px;
+}
+
+a {
+  text-decoration: underline;
+}
+
+h1, h3, h4 {
+  margin-left: 30px;
+}
+
+h2 {
+  background-color: #ffdbd1;
+  margin: 24px 0;
+  padding: 16px 30px;
+}
+
+.main-container {
+  width: 100%;
+  padding: 0;
+  max-width: none;
+}
+
+
+pre, p{
+  margin-left: 70px;
+  margin-right: 70px;
+}
+```
+
+## Sender and Frequency of SNS messages over time
+
+This is a dynamic report on the data collected from the Frequency & Types of SNS messages survey, click [here]("https://forms.gle/7BLzLQNj7XLEepk87") to open the Google Form and fill in the survey!
+
+
+## bar graph 1 (SNS message total from friends & acquaintances, by day)
+
+```{r}
+#reading the data from online csv url
+logged_data <- read.csv("https://docs.google.com/spreadsheets/d/e/2PACX-1vTha3xy_SPWUq7wyVxgjkxSeUkbA8oaStoGu0foB2uPxyza95C-UIgCCAbexEEKkOFDtnlk8H2dQ8AT/pub?output=csv")
+
+#cleaning up the data frame for readability (rename variables)
+latest_data <- logged_data %>% rename(friends_acquaintances = 2,
+                                      family_partner = 3,
+                                      morning_msg_from_friends_acquaintances = 4,
+                                      midday_msg_from_friends_acquaintances = 5,
+                                      night_msg_from_friends_acquaintances = 6,
+                                      morning_msg_from_family_partner = 7,
+                                      midday_msg_from_family_partner = 8,
+                                      night_msg_from_family_partner = 9,)
+#cleaning up the data frame for readability (converting all NA entries to 0)
+latest_data[is.na(latest_data)] = 0
+
+friends_max <- latest_data[4:6] %>% max() 
+# 4th to 6th column of the data frame are the 3 different time frames
+# for data collected on friends & acquaintances messages, find the max
+# value
+family_max <- latest_data[7:9] %>% max()
+# 7th to 9th column of the data frame are the 3 different time frames
+# for data collected on family & partner messages, find the max
+# value
+
+# sum of the number of messages received from all time frames per day
+entire_day_from_friends <- latest_data$night_msg_from_friends_acquaintances +  latest_data$midday_msg_from_friends_acquaintances + latest_data$morning_msg_from_friends_acquaintances
+entire_day_from_family <- latest_data$night_msg_from_family_partner + latest_data$midday_msg_from_family_partner + latest_data$morning_msg_from_family_partner
+
+# sum of the number of messages received from all time frames per day
+day_max_from_friends <- entire_day_from_friends %>% max()
+day_max_from_family <- entire_day_from_family %>% max()
+
+# bar graph 1 (SNS message total from friends & acquaintances, by day)
+latest_data %>%
+  ggplot() +
+  geom_bar(aes(x = entire_day_from_friends),
+           fill = "red") + 
+  labs(title = "Total SNS messages received from friends & acquaintances each day",
+       caption = "Source: Google Form survey",
+       x = "No. of msg received",
+       y = "Observation count")
+```
+
+The highest number of SNS messages received from friends & acquaintances in a whole day is `r day_max_from_friends`.
+
+The highest number of SNS messages received from friends & acquaintances during 
+any time frame of the day is `r friends_max`.
+
+
+## bar graph 2 (SNS message total from family & partner, by day)
+```{r}
+# bar graph 2 (SNS message total from family & partner, by day)
+latest_data %>%
+  ggplot() +
+  geom_bar(aes(x = entire_day_from_family),
+           fill = "blue") + 
+  labs(title = "Total SNS messages received from family & partner each day",
+       caption = "Source: Google Form survey",
+       x = "No. of msg received",
+       y = "Observation count")
+```
+
+The highest number of SNS messages received from family & partner in a whole day is `r day_max_from_family`.
+
+The highest number of SNS messages received from family & partner during any time 
+frame of the day is `r family_max`.
+
+## bar graph 3 (Summary and comparison for average SNS messages between two groups of sender)
+
+```{r}
+
+# average SNS messages received each day from each category of sender, rounded to 1 decimal
+avg_count_per_day_from_friends <- entire_day_from_friends %>% mean() %>% round(1)
+avg_count_per_day_from_family <- entire_day_from_family %>% mean() %>% round(1)
+
+# value set up for bar graph 3, taking the mean and rounding the number of messages
+# received from each group, during each time frame over the entire survey
+avg_from_friends_morning <- latest_data$morning_msg_from_friends_acquaintances %>% mean() %>% round(1)
+avg_from_friends_midday <- latest_data$midday_msg_from_friends_acquaintances %>% mean() %>% round(1)
+avg_from_friends_night <- latest_data$night_msg_from_friends_acquaintances %>% mean() %>% round(1)
+
+avg_from_family_morning <- latest_data$morning_msg_from_family_partner %>% mean() %>% round(1)
+avg_from_family_midday <- latest_data$midday_msg_from_family_partner %>% mean() %>% round(1)
+avg_from_family_night <- latest_data$night_msg_from_family_partner %>% mean() %>% round(1)
+
+# more set up, aligning the number of elements in each category by multiplying
+# them to match them against other variables. Creating a new data frame for
+# bar graph 3 in order to explore & compare how two groups of sender do during
+# the different time frames of the day.
+sender_category <- rep(c("Friends & acquaintances" , "Family & Partner") , 3)
+time_frame <- c(rep("Morning", 2), rep("Midday", 2), rep("Night", 2))
+average_count <- c(avg_from_friends_morning, 
+                   avg_from_family_morning, 
+                   avg_from_friends_midday, 
+                   avg_from_family_midday, 
+                   avg_from_friends_night, 
+                   avg_from_family_night)
+new_data <- data.frame(sender_category, time_frame, average_count)
+
+# order definition for how the x axis, because the default was to put midday before
+# morning under alphabetic ordering.
+time_order <- c("Morning", "Midday", "Night")
+
+
+# bar graph 3 (Summary and comparison for average SNS messages between
+# two groups of sender), system assigned color scheme, collapsed and grouped
+# bars in the same time frame for readability.
+ggplot(new_data, aes(y = average_count, 
+                 x = factor(time_frame, level = time_order), 
+                 fill = sender_category)) + 
+  geom_bar(position="dodge", stat="identity") + 
+  labs(title = "Sender & frequency SNS message survey average",
+       subtitle = "The average number of SNS messages received categorized with time and sender.",
+       caption = "Source: Google Form survey",
+       x = "Time frames during the day",
+       y = "Average no. of SNS msg received")
+
+```
+
+On average, `r avg_count_per_day_from_friends` SNS messages are received each day from friends & acquaintances.
+
+On average, `r avg_count_per_day_from_family` SNS messages are received each day from family & partner.
+
